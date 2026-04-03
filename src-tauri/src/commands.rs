@@ -126,23 +126,12 @@ pub fn estimate_download(bounds: Bounds, zoom: u8) -> EstimateResult {
     let tile_count = tile::estimate_tile_count(&bounds, zoom);
     let avg_tile_size_kb = 20.0;
     let estimated_size_mb = (tile_count as f64 * avg_tile_size_kb) / 1024.0;
-    
-    let max_tiles = 500_000u32;
-    
-    if tile_count > max_tiles {
-        EstimateResult {
-            tile_count,
-            estimated_size_mb,
-            allowed: false,
-            warning: Some(format!("区域过大（{} 个瓦片），超过 {} 个上限。请缩小区域或降低缩放级别。", tile_count, max_tiles)),
-        }
-    } else {
-        EstimateResult {
-            tile_count,
-            estimated_size_mb,
-            allowed: true,
-            warning: None,
-        }
+
+    EstimateResult {
+        tile_count,
+        estimated_size_mb,
+        allowed: true,
+        warning: None,
     }
 }
 

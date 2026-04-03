@@ -35,6 +35,7 @@
 ### 环境要求
 - [Rust](https://www.rust-lang.org/tools/install) 1.70+
 - [Node.js](https://nodejs.org/) (可选，仅开发时需要)
+- 系统依赖（Tauri 需要 WebView + GTK 相关开发库，见下方「本地构建完整环境配置」）
 
 ### 开发运行
 
@@ -51,6 +52,101 @@ cargo tauri build
 ```
 
 构建完成后，安装包位于 `src-tauri/target/release/bundle/` 目录。
+
+## 🧰 本地构建完整环境配置
+
+> 如果你遇到 `glib-2.0`、`webkit2gtk`、`pkg-config` 相关报错，基本都是系统依赖未安装导致。
+
+### 1) 安装 Rust 与 Tauri CLI（所有平台通用）
+
+```bash
+# 安装 Rust（已安装可跳过）
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+
+# 安装 tauri-cli（v2）
+cargo install tauri-cli --version "^2.0.0"
+```
+
+### 2) 安装 Node.js（建议 LTS）
+
+- 到 <https://nodejs.org/> 安装 LTS 版本，安装完成后确认：
+
+```bash
+node -v
+npm -v
+```
+
+### 3) Linux 依赖（Ubuntu / Debian）
+
+```bash
+sudo apt update
+sudo apt install -y \
+  pkg-config \
+  build-essential \
+  libgtk-3-dev \
+  libwebkit2gtk-4.1-dev \
+  libglib2.0-dev \
+  libjavascriptcoregtk-4.1-dev \
+  libsoup-3.0-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev \
+  patchelf
+```
+
+> 如果你的发行版没有 `4.1` 包名，可尝试 `libwebkit2gtk-4.0-dev` 和 `libjavascriptcoregtk-4.0-dev`。
+
+### 4) macOS 依赖
+
+1. 安装 Xcode Command Line Tools：
+
+```bash
+xcode-select --install
+```
+
+2. 安装 Homebrew（如未安装）并安装基础工具：
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install pkg-config
+```
+
+### 5) Windows 依赖
+
+1. 安装 **Microsoft Visual Studio C++ Build Tools**（勾选 “Desktop development with C++”）。
+2. 安装 **WebView2 Runtime**（大多数 Windows 11 已预装）。
+3. 安装 Rust（`stable-x86_64-pc-windows-msvc` 工具链）。
+
+可在 PowerShell 中验证：
+
+```powershell
+rustc -V
+cargo -V
+```
+
+### 6) 拉起开发环境并验证
+
+```bash
+# 进入 Tauri 工程目录
+cd src-tauri
+
+# 先做一次编译检查（推荐）
+cargo check
+
+# 启动开发模式
+cargo tauri dev
+```
+
+### 7) 打包发布
+
+```bash
+cd src-tauri
+cargo tauri build
+```
+
+产物目录：
+
+- Linux/macOS/Windows 安装包与可执行文件：`src-tauri/target/release/bundle/`
 
 ## 🏗️ 项目结构
 
